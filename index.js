@@ -183,9 +183,9 @@ function highlightMatchingTiles(number){
 // This function increments the number count when a player inputs a number into a tile
 function NumberCount(){
     //let allTiles = document.querySelectorAll('.tile');
-    let digits = document.getElementById('digits');
-       
+    let digits = document.getElementById('digits');       
     let numberElement = digits.querySelectorAll('.number');
+
     numberElement.forEach(numberDiv => {
         let digit = numberDiv.id;
 
@@ -196,5 +196,12 @@ function NumberCount(){
         countSpan.classList.add('num-count');
         countSpan.innerText =`${count[digit]}`;
         numberDiv.appendChild(countSpan);
+
+        //Disable number if count is 0
+        if(count[digit] <=0) {
+            numberDiv.classList.add('disabled');
+        } else {
+            numberDiv.classList.remove('disabled');
+        }
     });
 }
