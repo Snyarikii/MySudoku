@@ -7,6 +7,10 @@ for(let i = 1; i <= 9; i++){
     count[i] = 9;
 }
 
+document.getElementById('DarkModeBtn').addEventListener('click', toggleDarkMode);
+function toggleDarkMode() {
+    document.body.classList.toggle('dark-mode');
+}
 
 // This function initializes the number count according to the board
 function initializeCount(){
@@ -120,9 +124,10 @@ function selectTile(){
                 col: c
             });
             this.innerText = numSelected.id;
-            this.style.color = 'blue';
+            this.classList.add('correct-color');
             count[numSelected.id]--;
             NumberCount();
+            EndGame();
         } else {
             moveStack.push({
                 tile: this,
@@ -134,9 +139,10 @@ function selectTile(){
             
             errors +=1;
             document.getElementById('errors').innerText = errors;
-            this.style.color = 'red';
+            this.classList.add('wrong-color');
             count[numSelected.id]--;
             NumberCount();
+            EndGame();
         }
         highlightMatchingTiles(numSelected.id);
         NumberCount();
@@ -157,10 +163,10 @@ function UndoMove(){
 
     
     //If last move was wrong, reduce error count
-    if(solution[lastMove.row][lastMove.col] !== lastMove.value){
-        errors -= 1;
-        document.getElementById('errors').innerText = errors;
-    }
+    // if(solution[lastMove.row][lastMove.col] !== lastMove.value){
+    //     errors -= 1;
+    //     document.getElementById('errors').innerText = errors;
+    // }
     highlightMatchingTiles(numSelected.id);
 }
 
@@ -204,4 +210,67 @@ function NumberCount(){
             numberDiv.classList.remove('disabled');
         }
     });
+
+    if(numSelected && count[numSelected.id] <=0) {
+        autoSelectNextAvailableNumber();
+    }
+}
+
+function autoSelectNextAvailableNumber() {
+   if(!numSelected) return;
+
+   let current = parseInt(numSelected.id);
+
+   //Check from next number up to 9
+   for(let i = current + 1; i <= 9; i++) {
+    if(count[i] > 0) {
+        switchToNumber(i);
+        return;
+    }
+   }
+   //If not found, check from 1 up to current
+   for (let i = 1; i < current; i++) {
+    if(count[i] > 0) {
+        switchToNumber(i);
+        return;
+    }
+   }
+
+   //No numbers available
+   if(numSelected) {
+    numSelected.classList.remove('number-selected');
+   }
+   numSelected = null;
+   highlightMatchingTiles(null);
+}
+function switchToNumber(i){
+    if(numSelected) {
+        numSelected.classList.remove('number-selected');
+    }
+    let nexNumberDiv = document.getElementById(i);
+    numSelected = nexNumberDiv;
+    numSelected.classList.add('number-selected');
+    highlightMatchingTiles(numSelected.id);
+}
+
+//End of the game
+function EndGame() {
+    let allTiles = document.querySelectorAll('.tile');
+    for(let tile of allTiles) {
+      if(tile.innerText === ''){
+        return;
+      }
+    }
+    //Check if board is correct
+    for(let tile of allTiles)  {
+        let coords = tile.id.split('-');
+        let r = parseInt(coords[0]);
+        let c = parseInt(coords[1]);
+
+        if(tile.innerText !== solution[r][c]) {
+            alert("Some numbers are incorrect. Try again");
+            return;
+        }
+    }
+    alert('You have successfully completed the sudoku!');
 }

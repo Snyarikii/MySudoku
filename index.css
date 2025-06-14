@@ -1,9 +1,19 @@
+/* Light mode */
 body{
     font-family: Arial, Helvetica, sans-serif;
     text-align: center;
 }
+header{
+    display: flex;
+    justify-content: space-between;
+}
 hr{
     width: 500px;
+}
+#DarkModeBtn{
+    background-color: transparent;
+    border: none;
+    font-size: 20px;
 }
 #errors{
     color: coral;
@@ -30,6 +40,22 @@ hr{
     display: flex;
     justify-content: center;
     align-items: center;
+}
+#undo{
+    margin-bottom: 10px;
+    background: transparent;
+    border: none;
+    font-weight: 900;
+    font-size: 20px;
+    justify-content: left;
+}
+#undo:hover{
+    color: blue;
+}
+.undo-label{
+    font-size: 12px;
+    margin-top: 0;
+    font-weight: 500;
 }
 #digits{
     width: 450px;
@@ -76,10 +102,71 @@ hr{
     border-right: 2px solid black;
 }
 .highlight{
-    background-color: rgb(218, 246, 57);
+    background-color: /*rgb(224, 242, 67)*/rgba(255, 128, 0, 0.575);
 }
 .disabled{
     opacity: 0.5;
     pointer-events: none;
     cursor: not-allowed;
+}
+.correct-color{
+    color: blue;
+}
+.wrong-color{
+    color: red;
+}
+
+/* Dark mode */
+.dark-mode {
+    background-color: #121212;
+}
+.dark-mode hr {
+    color: #444444;
+}
+.dark-mode header h1 {
+    color: #E0E0E0;
+}
+.dark-mode #board {
+    background-color: #1E1E1E;
+}
+.dark-mode .tile {
+    color: #E0E0E0;
+    border: 1px solid #333333;
+}
+.dark-mode .tile-start {
+    background-color: #2c2c2ca7;
+}
+.dark-mode #digits {
+    color: #BDBDBD;
+}
+.dark-mode .number {
+    border: 1px solid #9E9E9E;
+}
+.dark-mode .number-selected {
+    background-color: #1E1E1E;
+    border-color: #2196F3;
+}
+.dark-mode .num-count {
+    color: #BDBDBD;
+}
+.dark-mode #undo {
+    color: #B0BEC5;
+}
+.dark-mode .horizontal-line {
+    border-bottom: 2px solid white;
+}
+.dark-mode .vertical-line {
+    border-right: 2px solid white;
+}
+.dark-mode .highlight {
+    background-color: rgba(255, 128, 0, 0.575);
+}
+.dark-mode .error {
+    color: #EF5350;
+}
+.dark-mode .correct-color{
+    color: rgb(0, 255, 0);
+}
+.dark-mode .wrong-color{
+    color: red;
 }
