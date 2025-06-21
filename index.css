@@ -7,6 +7,13 @@ header{
     display: flex;
     justify-content: space-between;
 }
+header, h1{
+    margin-left: 20px;
+    margin-top: 20px;
+}
+header, #DarkModeBtn{
+    margin-right: 30px;
+}
 hr{
     width: 500px;
 }
@@ -41,6 +48,11 @@ hr{
     justify-content: center;
     align-items: center;
 }
+.tile .notes{
+    font-size: 0.6rem;
+    color: grey;
+    text-align: center;
+}
 #undo{
     margin-bottom: 10px;
     background: transparent;
@@ -50,7 +62,23 @@ hr{
     justify-content: left;
 }
 #undo:hover{
-    color: blue;
+    color: rgba(255, 128, 0, 0.575);
+}
+#notes {
+    margin-bottom: 10px;
+    background: transparent;
+    border: none;
+    font-weight: 900;
+    font-size: 20px;
+    justify-content: left;   
+}
+#notes:hover {
+    color: rgba(255, 128, 0, 0.575);
+}
+#notes-label{
+    font-size: 12px;
+    font-weight: 500;
+    margin-top: 0;
 }
 .undo-label{
     font-size: 12px;
@@ -89,7 +117,8 @@ hr{
 }
 
 .number-selected {
-    background-color: gray;
+    background-color: rgba(128, 128, 128, 0.368);
+    border:1px solid rgba(255, 128, 0, 0.575);
 }
 .tile-start{
     background-color: whitesmoke;
@@ -144,13 +173,22 @@ hr{
 }
 .dark-mode .number-selected {
     background-color: #1E1E1E;
-    border-color: #2196F3;
+    border-color: rgba(255, 128, 0, 0.575);
 }
 .dark-mode .num-count {
     color: #BDBDBD;
 }
 .dark-mode #undo {
     color: #B0BEC5;
+}
+.dark-mode #undo:hover{
+    color: rgba(255, 128, 0, 0.575);
+}
+.dark-mode #notes {
+    color: #B0BEC5;
+}
+.dark-mode #notes:hover {
+    color: rgba(255, 128, 0, 0.575);
 }
 .dark-mode .horizontal-line {
     border-bottom: 2px solid white;

@@ -10,13 +10,21 @@
     <header>
         <h1>Sudoku</h1>
         <button id="DarkModeBtn">&#127769;</button>
+        <div class="difficulty">
+            <button id="Easy-sudoku">Easy</button>
+            <button id="Hard-sudoku">Hard</button>
+        </div>
     </header>
     <hr>
     <h2 id="errors">0</h2>
     
     <div id="board"></div>
     <br>
-    <button id="undo">&#x21BA;<p class="undo-label">Undo</p></button>
+    <div class="buttons">
+        <button id="undo">&#x21BA;<p class="undo-label">Undo</p></button>
+        <button id="notes">📝<p id="notes-label">Notes</p></button>
+
+    </div>
     <div id="digits"></div>
 </body>
 <script src="index.js"></script>
