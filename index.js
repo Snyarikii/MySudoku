@@ -415,6 +415,63 @@ function switchToNumber(i){
     highlightMatchingTiles(numSelected.id);
 }
 
+//Give player a hint
+document.getElementById("hintBtn").addEventListener("click", giveHint);
+let hintCount = 3;
+
+function giveHint() {
+    if(hintCount <= 0) {
+        alert("No hints left!");
+        return;
+    }
+    hintCount--;
+    document.getElementById("hint-label").innerText = `Hint (${hintCount})`;
+    let allTiles = document.querySelectorAll(".tile");
+
+    let emptyTiles = Array.from(allTiles).filter(tile => tile.innerText === "");
+
+    if(emptyTiles.length === 0) {
+        alert("No empty tiles left - puzzle is complete!");
+        return;
+    }
+
+    //Choose an empty tile at random for now
+    let randomTile = emptyTiles[Math.floor(Math.random() * emptyTiles.length)];
+
+    //Get its coordinates
+    let coords = randomTile.id.split("-");
+    let r = parseInt(coords[0]);
+    let c = parseInt(coords[1]);
+
+    //Get correct value form the current solution
+    let correctValue = currentSolution[r][c];
+
+    //Fill it in
+    randomTile.innerText = correctValue;
+    randomTile.classList.add("hint-color");
+
+    //Record move in stack
+    moveStack.push({
+        tile: randomTile, 
+        previousValue: '',
+        value: correctValue,
+        row: r,
+        col: c,
+        isHint: true
+    });
+
+    //Update count
+    count[correctValue]--;
+    NumberCount();
+    setTimeout(() => {
+        randomTile.classList.remove("hint-color");
+    }, 1500);
+
+
+    EndGame();
+
+}
+
 //End of the game
 function EndGame() {
     let allTiles = document.querySelectorAll('.tile');

@@ -80,6 +80,26 @@ hr{
     font-weight: 500;
     margin-top: 0;
 }
+#hintBtn{
+    margin-bottom: 10px;
+    background: transparent;
+    border: none;
+    font-weight: 900;
+    font-size: 20px;
+    justify-content: left;   
+}
+#hintBtn:hover {
+    color: rgba(255, 128, 0, 0.575);
+}
+#hint-label{
+    font-size: 12px;
+    font-weight: 500;
+    margin-top: 0;
+}
+.hint-color{
+    background-color: #c8f7c5;
+    transition: background-color 1s ease;
+}
 .undo-label{
     font-size: 12px;
     margin-top: 0;
@@ -189,6 +209,16 @@ hr{
 }
 .dark-mode #notes:hover {
     color: rgba(255, 128, 0, 0.575);
+}
+.dark-mode #hintBtn {
+    color: #B0BEC5;
+}
+.dark-mode #hintBtn:hover {
+    color: rgba(255, 128, 0, 0.575);
+}
+.dark-mode .hint-color{
+    background-color: #37474f;
+    transition: background-color 1s ease;
 }
 .dark-mode .horizontal-line {
     border-bottom: 2px solid white;
