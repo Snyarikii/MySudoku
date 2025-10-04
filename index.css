@@ -105,6 +105,23 @@ hr{
     margin-top: 0;
     font-weight: 500;
 }
+#resetBtn{
+    margin-bottom: 10px;
+    background: transparent;
+    border: none;
+    font-weight: 900;
+    font-size: 20px;
+    justify-content: left;   
+}
+#resetBtn:hover {
+    color: rgba(255, 128, 0, 0.575);
+}
+#reset-label{
+    font-size: 12px;
+    font-weight: 500;
+    margin-top: 0;
+}
+
 #digits{
     width: 450px;
     height: 50px;
@@ -219,6 +236,12 @@ hr{
 .dark-mode .hint-color{
     background-color: #37474f;
     transition: background-color 1s ease;
+}
+.dark-mode #resetBtn {
+    color: #B0BEC5;
+}
+.dark-mode #resetBtn:hover {
+    color: rgba(255, 128, 0, 0.575);
 }
 .dark-mode .horizontal-line {
     border-bottom: 2px solid white;

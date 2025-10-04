@@ -3,6 +3,7 @@ var tileSelected = null;
 var moveStack = [];
 var errors = 0;
 let noteMode = false;
+let initialBoard = [];
 
 let count = {};
 for(let i = 1; i <= 9; i++){
@@ -41,11 +42,14 @@ window.onload = function () {
     setupDifficultyButtons();
     startNewGame("easy");
     document.getElementById('undo').addEventListener('click', UndoMove);
+    document.getElementById('resetBtn').addEventListener('click', resetBoard);
 }
 
 function setupDifficultyButtons() {
     document.getElementById("Easy-sudoku").addEventListener("click", () => startNewGame("easy"));
     document.getElementById("Hard-sudoku").addEventListener('click', () => startNewGame("hard"));
+    document.getElementById("Expert-sudoku").addEventListener('click', () => startNewGame("expert"));
+    document.getElementById("Extreme-sudoku").addEventListener('click', () => startNewGame("extreme"));
 }
 
 function switchDifficulty(board, solution) {
@@ -217,6 +221,57 @@ function removeNumberFromAllNotes(number) {
     });
 }
 
+function resetBoard() {
+
+    //Check if player has played any moves
+    if(moveStack.length === 0) {
+        performReset();
+        return;
+    }
+    const confirmReset = confirm("You have unsaved progress. Are you sure you want to reset the board? All your progress will be lost.");
+    if(confirmReset) {
+        performReset();
+    }
+
+}
+
+function performReset() {
+    moveStack = [];
+    errors = 0;
+    document.getElementById('errors').innerText = errors;
+    
+    //reset number count
+    for (let i = 1; i <= 9; i++) count[i] = 9;
+    
+    //Reset board display
+    const tiles = document.querySelectorAll('.tile');
+    tiles.forEach(tile => {
+        const [r, c] = tile.id.split('-').map(Number);
+        const value = initialBoard[r][c];
+    
+        tile.innerText = '';
+        tile.classList.remove('correct-color', 'wrong-color', 'highlight');
+        tile.style.color = '';
+    
+        if (value !== '-') {
+            tile.innerText = value;
+            tile.classList.add('tile-start');
+        } else {
+            tile.classList.remove('tile-start');
+        }
+    });
+    
+    initializeCount();
+    NumberCount();
+    
+    if (numSelected) numSelected.classList.remove('number-selected');
+    numSelected = null;
+    highlightMatchingTiles(null);
+    
+}
+
+
+// This function undoes the last move made by the player
 function UndoMove() {
     if (moveStack.length === 0) return;
 
@@ -298,10 +353,10 @@ function autoSelectNextAvailableNumber() {
    }
    //If not found, check from 1 up to current
    for (let i = 1; i < current; i++) {
-    if(count[i] > 0) {
-        switchToNumber(i);
-        return;
-    }
+        if(count[i] > 0) {
+            switchToNumber(i);
+            return;
+        }
    }
 
    //No numbers available
@@ -459,7 +514,9 @@ function generatePuzzle(solvedBoard, difficulty = 'easy') {
     let removalCount;
     if (difficulty === 'easy') removalCount = 35;
     else if(difficulty === 'hard') removalCount = 45;
-    else removalCount = 55;
+    else if(difficulty === 'expert') removalCount = 50;
+    else if(difficulty === 'extreme') removalCount = 55;
+    else removalCount = 60;//
 
     while (removalCount > 0) {
         let row = Math.floor(Math.random() * 9);
@@ -519,6 +576,8 @@ function startNewGame(difficulty) {
     //Convert numeric 0s to '-' for compatibility with existing code
     board = puzzleGrid.map(row => row.map(cell => (cell === 0 ? '-' : cell.toString())));
     currentSolution = solutionGrid.map(row => row.map(cell => cell.toString()));
+
+    initialBoard = board.map(row => [...row]);
 
     document.getElementById("board").innerHTML = "";
     setupGame();
