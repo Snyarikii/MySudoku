@@ -36,69 +36,16 @@ function initializeCount(){
     });
 }
 
-var easyBoard = [
-    "--74916-5",
-    "2---6-3-9",
-    "-----7-1-",
-    "-586----4",
-    "--3----9-",
-    "--62--187",
-    "9-4-7---2",
-    "67-83----",
-    "81--45---"
-]
-
-var easySolution = [
-    "387491625",
-    "241568379",
-    "569327418",
-    "758619234",
-    "123784596",
-    "496253187",
-    "934176852",
-    "675832941",
-    "812945763"
-]
-var hardBoard = [
-    // 329
-    "--567----",
-    "-18--9---",
-    "--3----5-",
-    "-8-2-4-7-",
-    "--4---2--",
-    "-3-8-5-4-",
-    "-2----9--",
-    "---4--12-",
-    "----523--"
-];
-var hardSolution = [
-    "495673812",
-    "218549736",
-    "673128459",
-    "986214573",
-    "154736298",
-    "732895641",
-    "527361984",
-    "369487125",
-    "841952367"
-]
-
-var currentBoard = easyBoard;
-var currentSolution = easySolution;
 
 window.onload = function () {
-    setupGame();
     setupDifficultyButtons();
+    startNewGame("easy");
     document.getElementById('undo').addEventListener('click', UndoMove);
 }
 
 function setupDifficultyButtons() {
-    document.getElementById("Easy-sudoku").addEventListener('click', () =>{
-        switchDifficulty(easyBoard, easySolution);
-    });
-    document.getElementById("Hard-sudoku").addEventListener('click', () => {
-        switchDifficulty(hardBoard, hardSolution);
-    });
+    document.getElementById("Easy-sudoku").addEventListener("click", () => startNewGame("easy"));
+    document.getElementById("Hard-sudoku").addEventListener('click', () => startNewGame("hard"));
 }
 
 function switchDifficulty(board, solution) {
@@ -115,6 +62,12 @@ function resetGame() {
     moveStack = [];
     for( let i = 1; i <= 9; i++) count[i] = 9;
     document.getElementById('errors').innerText = errors;
+
+    if(numSelected) {
+        numSelected.classList.remove('number-selected');
+    }
+    numSelected = null;
+    highlightMatchingTiles(null);
 }
 
 function setupGame() {
@@ -123,7 +76,12 @@ function setupGame() {
     initializeCount();
     NumberCount();
 }
+
+// This function creates the number selection area
 function createDigits() {
+    const digitsContainer = document.getElementById('digits');
+    digitsContainer.innerHTML = '';
+
     for (let i = 1; i <= 9; i++) {
         let number = document.createElement('div');
         number.id = i;
@@ -133,13 +91,15 @@ function createDigits() {
         document.getElementById('digits').appendChild(number);
     }
 }
+
+// This function creates the Sudoku board based on the predefined board array
 function createBoard() {
     for (let r = 0; r < 9; r++) {
         for (let c = 0; c < 9; c++) {
             let tile = document.createElement('div');
             tile.id = `${r}-${c}`;
-            if(currentBoard[r][c] != "-") {
-                tile.innerText = currentBoard[r][c];
+            if(board[r][c] != "-") {
+                tile.innerText = board[r][c];
                 tile.classList.add('tile-start');
             }
             if(r == 2 || r == 5) tile.classList.add('horizontal-line');
@@ -160,68 +120,10 @@ function selectNumber(){
 
     highlightMatchingTiles(numSelected.id);
 }
-// function selectTile(){
-//     // if(count[numSelected.id] <=0) {
-//     //     return;
-//     // }
-//     if(!numSelected || count[numSelected.id] <= 0) return;
 
-//     if(this.classList.contains('tile-start')) return;
-
-//     if(noteMode) {
-//         addNoteToTile(this, numSelected.id);
-//         return;
-//     }
-
-//     // if(numSelected){
-//     if(this.innerText != ''){
-//         return;
-//     }
-//     // this.innerText = numSelected.id;
-    
-//     // "0-0" "0-1" .. "3-1"
-//     let cords = this.id.split("-");
-//     let r = parseInt(cords[0]);
-//     let c = parseInt(cords[1]);
-    
-//     if(currentSolution[r][c] == numSelected.id){
-//         moveStack.push({
-//             tile: this,
-//             previousValue: '',
-//             value: numSelected.id,
-//             row: r,
-//             col: c
-//         });
-//         this.innerText = numSelected.id;
-//         this.classList.add('correct-color');
-//         count[numSelected.id]--;
-//         NumberCount();
-//         EndGame();
-//     } else {
-//         moveStack.push({
-//             tile: this,
-//             previousValue: '',
-//             value: numSelected.id,
-//             row: r,
-//             col: c
-//         });
-        
-//         errors +=1;
-//         document.getElementById('errors').innerText = errors;
-//         this.classList.add('wrong-color');
-//         count[numSelected.id]--;
-//         NumberCount();
-//         EndGame();
-//     }
-//     highlightMatchingTiles(numSelected.id);
-//     NumberCount();
-//     // }
-// }
 function selectTile(){
     if (!numSelected) return;
-
     if(count[numSelected.id] <=  0) return;
-
     if (this.classList.contains('tile-start')) return; // Can't modify starter tiles
 
     // NOTES MODE: Add/remove note from this tile
@@ -240,6 +142,9 @@ function selectTile(){
     // Clear any notes for this tile before placing the number
     this.dataset.notes = '';
     this.innerHTML = numSelected.id;
+
+    //Remove any old color classes first 
+    this.classList.remove('correct-color', 'wrong-color');
 
     moveStack.push({
         tile: this,
@@ -323,15 +228,17 @@ function UndoMove() {
     } else {
         lastMove.tile.innerText = lastMove.previousValue;
         lastMove.tile.dataset.notes = '';
-        lastMove.tile.style.color = 'black';
+        //lastMove.tile.style.color = 'black';
         lastMove.tile.classList.remove('correct-color', 'wrong-color');
-        count[lastMove.value]++;
-        NumberCount();
+        lastMove.tile.style.color = '';
+
+        if (lastMove.previousValue === '') {
+            count[lastMove.value]++;
+            NumberCount();
+        }
         highlightMatchingTiles(numSelected ? numSelected.id : null);
     }
-
 }
-
 
 // This function highlights similar numbers to the one that is selected by the user
 function highlightMatchingTiles(number){
@@ -346,7 +253,6 @@ function highlightMatchingTiles(number){
         }
     });
 }
-
 
 // This function increments the number count when a player inputs a number into a tile
 function NumberCount(){
@@ -419,14 +325,15 @@ function switchToNumber(i){
 document.getElementById("hintBtn").addEventListener("click", giveHint);
 let hintCount = 3;
 
+document.getElementById("hint-label").innerText = `Hints (${hintCount})`;
 function giveHint() {
     if(hintCount <= 0) {
         alert("No hints left!");
         return;
     }
     hintCount--;
-    document.getElementById("hint-label").innerText = `Hint (${hintCount})`;
     let allTiles = document.querySelectorAll(".tile");
+    document.getElementById("hint-label").innerText = `Hints (${hintCount})`;
 
     let emptyTiles = Array.from(allTiles).filter(tile => tile.innerText === "");
 
@@ -466,10 +373,155 @@ function giveHint() {
     setTimeout(() => {
         randomTile.classList.remove("hint-color");
     }, 1500);
-
-
     EndGame();
+}
 
+//This function checks if placing a number in a specific position is valid
+function isSafe(board, row, col, num) {
+    for (let x = 0; x < 9; x++) {
+        //Check row and column
+        if (board[row][x] === num || board[x][col] === num) return false;
+
+    }
+
+    //Check 3x3 box
+    let startRow = row - row % 3;
+    let startCol = col - col % 3;
+
+    for (let r = 0; r < 3; r++) {
+        for (let c = 0; c < 3; c++) {
+            if (board[startRow + r][startCol + c] === num) return false;
+        }
+    }
+    return true;
+}
+// Backtracking algorithm to solve the Sudoku puzzle
+function solveSudoku(board) {
+    for (let row = 0; row < 9; row++) {
+        for (let col = 0; col < 9; col++) {
+            if (board[row][col] === 0) {
+                for (let num = 1; num <= 9; num++) {
+                    if (isSafe(board, row, col, num)) {
+                        board[row][col] = num;
+                        if (solveSudoku(board)) {
+                            return true;
+                        }
+                        board[row][col] = 0;
+                    }
+                }
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+// Generate a full valid Sudoku solution
+function generateFullSolution() {
+    let board = Array.from({ length: 9 }, () => Array(9).fill(0));
+
+    function fillBoard() {
+        for (let row = 0; row < 9; row++) {
+            for (let col = 0; col < 9; col++) {
+                if (board[row][col] === 0) {
+                    let numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+                    shuffleArray(numbers);
+                    for (let num of numbers) {
+                        if (isSafe(board, row, col, num)) {
+                            board[row][col] =  num;
+                            if(fillBoard()) return true;
+                            board[row][col] = 0;
+                        }
+                    }
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+    fillBoard();
+    return board;
+}
+
+// This function shuffles an array in place
+function shuffleArray(array) {
+    for (let i = array.length -1; i > 0; i--){
+        let j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+}
+let solvedBoard = generateFullSolution();
+
+// Generate a Sudoku puzzle by removing numbers from the solved board
+function generatePuzzle(solvedBoard, difficulty = 'easy') {
+    let puzzle = solvedBoard.map(row => [...row]);
+
+    let removalCount;
+    if (difficulty === 'easy') removalCount = 35;
+    else if(difficulty === 'hard') removalCount = 45;
+    else removalCount = 55;
+
+    while (removalCount > 0) {
+        let row = Math.floor(Math.random() * 9);
+        let col = Math.floor(Math.random() * 9);
+        if (puzzle[row][col] !== 0) {
+            let backup = puzzle[row][col];
+            puzzle[row][col] = 0;
+
+            //Check if puzzle still has unique solution
+            if(!hasUniqueSolution(puzzle)) {
+                puzzle[row][col] = backup;
+                continue;
+            }
+            removalCount--;
+        }
+    }
+    return puzzle;
+}
+
+// Check if the Sudoku puzzle has a unique solution
+function hasUniqueSolution(board) {
+    let count = 0;
+
+    function solve(board) {
+        for (let row = 0; row < 9; row++) {
+            for (let col = 0; col < 9; col++) {
+                if (board[row][col] === 0) {
+                    for (let num = 1; num <= 9; num++) {
+                        if (isSafe(board, row, col, num)) {
+                            board[row][col] = num;
+                            solve(board);
+                            board[row][col] = 0;
+                            if (count > 1) return;
+                        }
+                    }
+                    return;
+                }
+            }
+        }
+        count++;
+    }
+    let copy = board.map(row => [...row]);
+    solve(copy);
+    return count === 1;
+}
+
+// Start a new game with the specified difficulty
+function startNewGame(difficulty) {
+    resetGame();
+
+    hintCount = 3;
+    document.getElementById("hint-label").innerText = `Hints (${hintCount})`;
+
+    let solutionGrid = generateFullSolution();
+    let puzzleGrid = generatePuzzle(solutionGrid, difficulty);
+
+    //Convert numeric 0s to '-' for compatibility with existing code
+    board = puzzleGrid.map(row => row.map(cell => (cell === 0 ? '-' : cell.toString())));
+    currentSolution = solutionGrid.map(row => row.map(cell => cell.toString()));
+
+    document.getElementById("board").innerHTML = "";
+    setupGame();
 }
 
 //End of the game
