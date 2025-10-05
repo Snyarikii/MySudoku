@@ -67,9 +67,14 @@ header, #DarkModeBtn{
 
 .mistakes{
     display: flex;
+    gap: 60px;
     text-align: center;
     justify-content: center;
     margin-bottom: -15px;
+}
+.mistakes-label{
+    display: flex;
+    gap: 5px;
 }
 
 #DarkModeBtn{
@@ -120,7 +125,7 @@ header, #DarkModeBtn{
     align-items: center;
 }
 .tile .notes{
-    font-size: 0.7rem;
+    font-size: 0.8rem;
     color: grey;
     text-align: center;
 }
@@ -264,8 +269,8 @@ header, #DarkModeBtn{
 .dark-mode {
     background-color: #121212;
 }
-.dark-mode hr {
-    color: #444444;
+.dark-mode .mistakes{
+    color: #E0E0E0;
 }
 .dark-mode header h1 {
     color: #E0E0E0;
@@ -340,6 +345,6 @@ header, #DarkModeBtn{
     color: #EF5350;
 }
 .dark-mode .note-highlight{
-    color: /*rgba(255, 128, 0, 0.575)*/ #64b5f6;
+    color: /*rgba(255, 128, 0, 0.575)*/ #258de1;
     font-weight: 700;
 }

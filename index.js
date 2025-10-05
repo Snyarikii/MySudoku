@@ -667,6 +667,12 @@ function startNewGame(difficulty) {
 
     document.getElementById("board").innerHTML = "";
     setupGame();
+
+    const difficultyLabel = document.getElementById('difficulty-level');
+    if(difficulty === 'easy') difficultyLabel.innerText = "Easy";
+    else if(difficulty === 'hard') difficultyLabel.innerText = "Hard";
+    else if(difficulty === 'expert') difficultyLabel.innerText = "Expert";
+    else if(difficulty === 'extreme') difficultyLabel.innerText = "Extreme";
 }
 
 //End of the game
