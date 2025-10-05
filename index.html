@@ -9,25 +9,30 @@
 <body>
     <header>
         <h1>Sudoku</h1>
-        <button id="DarkModeBtn">&#127769;</button>
         <div class="difficulty">
             <button id="Easy-sudoku">Easy</button>
             <button id="Hard-sudoku">Hard</button>
             <button id="Expert-sudoku">Expert</button>
             <button id="Extreme-sudoku">Extreme</button>
         </div>
+        <button id="DarkModeBtn">&#127769;</button>
     </header>
-    <hr>
-    <h2 id="errors">0</h2>
-    
-    <div id="board"></div>
-    <br>
-    <div class="buttons">
-        <button id="undo">&#x21BA;<p class="undo-label">Undo</p></button>
-        <button id="notes">📝<p id="notes-label">Notes</p></button>
-        <button id="hintBtn"> 💡<p id="hint-label"></p></button>
-        <button id="resetBtn">🔄<p id="reset-label">Reset</p></button>
 
+    <div class="mistakes">
+        <p>Mistakes: </p>
+        <p id="errors">0</p>
+    </div>
+
+
+    <div class="game-container">
+        <div id="board"></div>
+
+        <div class="buttons">
+            <button id="undo">&#x21BA;<p class="undo-label">Undo</p></button>
+            <button id="notes">📝<p id="notes-label">Notes</p></button>
+            <button id="hintBtn"> 💡<p id="hint-label"></p></button>
+            <button id="resetBtn">🔄<p id="reset-label">Reset</p></button>    
+        </div>
     </div>
     <div id="digits"></div>
 </body>

@@ -2,24 +2,76 @@
 body{
     font-family: Arial, Helvetica, sans-serif;
     text-align: center;
-    /* background-image: url('./SudokuBackground.jpeg');
-    background-repeat: no-repeat;
-    background-size: cover; */
 }
 header{
     display: flex;
     justify-content: space-between;
+    height: 7vh;
+    margin-bottom: 15px;
+    /* background-color: lightskyblue; */
 }
 header, h1{
     margin-left: 20px;
     margin-top: 20px;
+    
 }
 header, #DarkModeBtn{
     margin-right: 30px;
 }
-hr{
-    width: 500px;
+.difficulty{
+    display: flex;
+    gap: 5px;
+    justify-content: center;
+    border: none;
 }
+#Easy-sudoku {
+    background-color: lightgreen;
+    border: none;
+    border-radius: 4px;
+    padding: 5px;
+    cursor: pointer;
+}
+#Easy-sudoku:hover {
+    background-color: #52db52;
+}
+#Hard-sudoku {
+    background-color: lightcoral;
+    border: none;
+    border-radius: 4px;
+    padding: 5px;
+    cursor: pointer;
+}
+#Hard-sudoku:hover {
+    background-color: #ff4c4c;
+}
+#Expert-sudoku {
+    background-color: orange;
+    border: none;
+    border-radius: 4px;
+    padding: 5px;
+    cursor: pointer;
+}
+#Expert-sudoku:hover {
+    background-color: #dd8602;
+}
+#Extreme-sudoku {
+    background-color: red;
+    border: none;
+    border-radius: 4px;
+    padding: 5px;
+    cursor: pointer;
+}
+#Extreme-sudoku:hover {
+    background-color: #b30000;
+}
+
+.mistakes{
+    display: flex;
+    text-align: center;
+    justify-content: center;
+    margin-bottom: -15px;
+}
+
 #DarkModeBtn{
     background-color: transparent;
     border: none;
@@ -27,14 +79,30 @@ hr{
 }
 #errors{
     color: coral;
+    font-weight: 600;
+    margin-bottom: -15px;
+    
+}
+
+.game-container{
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 4px;
+    /* margin-top: 20px; */
+}
+.buttons {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+    margin-top: 100px;
 }
 #board{
     width: 450px;
     height: 450px;
     cursor: pointer;
-
-    /* background-color: yellow; */
-    margin: 0 auto;
+    margin-left: 68px;
     display: flex;
     flex-wrap: wrap;
 }
@@ -129,9 +197,12 @@ hr{
     width: 450px;
     height: 50px;
     /* background-color: yellow; */
-    margin: 0 auto;
+    margin: 20px auto 0;
+
+    justify-content: center;   
     display: flex;
     flex-wrap: wrap;
+    /* margin-top: 10px; */
 }
 .number{
     width: 44px;
@@ -171,7 +242,7 @@ hr{
     border-right: 2px solid black;
 }
 .highlight{
-    background-color: /*rgb(224, 242, 67)*/rgba(255, 128, 0, 0.575);
+    background-color:/* rgba(255, 128, 0, 0.575)*/ #d6ebff;
 }
 .disabled{
     opacity: 0.5;
@@ -179,13 +250,13 @@ hr{
     cursor: not-allowed;
 }
 .correct-color{
-    color: blue;
+    color: #66bb6a;
 }
 .wrong-color{
     color: red;
 }
 .note-highlight{
-    color: rgba(255, 128, 0, 0.575);
+    color: /*rgba(255, 128, 0, 0.575)*/ #0011ff;
     font-weight: 700;
 }
 
@@ -257,14 +328,18 @@ hr{
     border-right: 2px solid white;
 }
 .dark-mode .highlight {
-    background-color: rgba(255, 128, 0, 0.575);
+    background-color: /*rgba(255, 128, 0, 0.575)*/ #2b3d4f;
 }
 .dark-mode .error {
     color: #EF5350;
 }
 .dark-mode .correct-color{
-    color: rgb(0, 255, 0);
+    color: /*rgb(0, 255, 0)*/ #81c784;
 }
 .dark-mode .wrong-color{
-    color: red;
+    color: #EF5350;
+}
+.dark-mode .note-highlight{
+    color: /*rgba(255, 128, 0, 0.575)*/ #64b5f6;
+    font-weight: 700;
 }
