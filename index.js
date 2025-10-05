@@ -1,3 +1,5 @@
+//const { render } = require("express/lib/response");
+
 var numSelected = null;
 var tileSelected = null;
 var moveStack = [];
@@ -67,6 +69,12 @@ function resetGame() {
     for( let i = 1; i <= 9; i++) count[i] = 9;
     document.getElementById('errors').innerText = errors;
 
+    const tiles = document.querySelectorAll('.tile');
+    tiles.forEach(tile => {
+        tile.dataset.notes = '';
+        tile.innerHTML = '';
+    });
+
     if(numSelected) {
         numSelected.classList.remove('number-selected');
     }
@@ -123,6 +131,7 @@ function selectNumber(){
     numSelected.classList.add('number-selected');
 
     highlightMatchingTiles(numSelected.id);
+    highlightNotesOfNumber(numSelected.id);
 }
 
 function selectTile(){
@@ -137,7 +146,7 @@ function selectTile(){
     }
 
     // NORMAL MODE: Place number
-    if (this.innerText !== '') return;
+    if (!this.dataset.notes && this.innerText !== '') return;
 
     let coords = this.id.split("-");
     let r = parseInt(coords[0]);
@@ -150,16 +159,25 @@ function selectTile(){
     //Remove any old color classes first 
     this.classList.remove('correct-color', 'wrong-color');
 
+    const prevNotesArray = this.dataset.notes ? this.dataset.notes.split(',') : [];
+
     moveStack.push({
         tile: this,
         previousValue: '',
+        previousNotes: prevNotesArray,
         value: numSelected.id,
         row: r,
         col: c
     });
 
+    this.classList.remove('correct-color', 'wrong-color', 'hint-color');
+    this.style.color = '';
+
+
     if (currentSolution[r][c] == numSelected.id) {
         this.classList.add('correct-color');
+        removeNotesInRelatedTiles(r, c, numSelected.id);
+        highlightMatchingTiles(numSelected.id);
     } else {
         this.classList.add('wrong-color');
         errors++;
@@ -168,9 +186,7 @@ function selectTile(){
 
     count[numSelected.id]--;
     NumberCount();
-    if (numSelected) {
-        removeNumberFromAllNotes(numSelected.id);
-    }
+   
     highlightMatchingTiles(numSelected ? numSelected.id : null);
     EndGame();
 }
@@ -199,6 +215,7 @@ function addNoteToTile(tile, number) {
     renderTileNotes(tile);
 }
 
+// This function renders the notes inside a tile
 function renderTileNotes(tile) {
     let notes = tile.dataset.notes ? tile.dataset.notes.split(',') : [];
     tile.innerHTML = '';
@@ -206,18 +223,74 @@ function renderTileNotes(tile) {
     if(notes.length > 0) {
         let notesDiv = document.createElement('div');
         notesDiv.classList.add('notes');
-        notesDiv.innerText = notes.sort().join(' ');
+        notes.sort().forEach(num => {
+            let noteSpan = document.createElement('span');
+            noteSpan.className = "note-digit";
+            noteSpan.innerText = num;
+            notesDiv.appendChild(noteSpan);
+        });
         tile.appendChild(notesDiv);
+        highlightNotesOfNumber(numSelected ? numSelected.id : null);
     }
 }
+
 function removeNumberFromAllNotes(number) {
-    let tiles = document.querySelectorAll('.tile');
+    const tiles = document.querySelectorAll('.tile');
     tiles.forEach(tile => {
-        if(tile.dataset.notes) {
-            let notes = tile.dataset.notes.split(',').filter(n => n !== number);
-            tile.dataset.notes = notes.join(',');
+        if(!tile.dataset.notes) return;
+
+        let notesArray = tile.dataset.notes.split(',').filter(n => n !== number);
+
+        if (notesArray.length === 0) {
+            delete tile.dataset.notes;
+            tile.innerHTML = '';
+        } else {
+            tile.dataset.notes = notesArray.join(',');
             renderTileNotes(tile);
         }
+        // if(tile.dataset.notes) {
+        //     let notes = tile.dataset.notes.split(',').filter(n => n !== number);
+        //     tile.dataset.notes = notes.join(',');
+        //     renderTileNotes(tile);
+        // }
+    });
+}
+
+function removeNotesInRelatedTiles(row, col, number) {
+    const allTiles =  document.querySelectorAll('.tile');
+    const boxRowStart = Math.floor(row / 3) * 3;
+    const boxColStart = Math.floor(col / 3) * 3;
+
+    allTiles.forEach(tile => {
+        const [r, c] = tile.id.split('-').map(Number);
+
+        //Skip the current tile (where the number was placed)
+        if (r === row && c === col ) return;
+
+        // Check if tile is in same row, column or 3x3 box
+        const sameRow = r === row;
+        const sameCol = c === col;
+        const sameBox = (r >= boxRowStart && r < boxRowStart + 3) &&
+                        (c >= boxColStart && c < boxColStart + 3);
+
+        if (sameRow || sameCol || sameBox) {
+            if (tile.dataset.notes) {
+                console.log(`Removing note ${number} from tile ${r}-${c}`);
+                let notesArray = tile.dataset.notes.split(',');
+
+                if (notesArray.includes(number.toString())) {
+                    notesArray = notesArray.filter(n => n !== number.toString());
+                    if (notesArray.length === 0) {
+                        delete tile.dataset.notes;
+                        tile.innerHTML = '';
+                    } else {
+                        tile.dataset.notes = notesArray.join(',');
+                        renderTileNotes(tile);
+                    }
+                }
+            }
+        }
+        
     });
 }
 
@@ -250,6 +323,8 @@ function performReset() {
         const value = initialBoard[r][c];
     
         tile.innerText = '';
+        tile.dataset.notes = '';
+        tile.innerHTML = '';
         tile.classList.remove('correct-color', 'wrong-color', 'highlight');
         tile.style.color = '';
     
@@ -282,12 +357,13 @@ function UndoMove() {
         renderTileNotes(lastMove.tile);
     } else {
         lastMove.tile.innerText = lastMove.previousValue;
-        lastMove.tile.dataset.notes = '';
+        lastMove.tile.dataset.notes = (lastMove.previousNotes && lastMove.previousNotes.length) ? lastMove.previousNotes.join(',') : '';
+        renderTileNotes(lastMove.tile);
         //lastMove.tile.style.color = 'black';
-        lastMove.tile.classList.remove('correct-color', 'wrong-color');
+        lastMove.tile.classList.remove('correct-color', 'wrong-color', 'hint-color');
         lastMove.tile.style.color = '';
 
-        if (lastMove.previousValue === '') {
+        if (lastMove.value) {
             count[lastMove.value]++;
             NumberCount();
         }
@@ -303,8 +379,17 @@ function highlightMatchingTiles(number){
     });
     
     allTiles.forEach(tile => {
-        if(tile.innerText === number){
+        if(tile.innerText === number && !tile.dataset.notes) {
             tile.classList.add('highlight');
+        }
+    });
+}
+
+function highlightNotesOfNumber(number) {
+    document.querySelectorAll('.tile .note-digit').forEach(span => {
+        span.classList.remove('note-highlight');
+        if(span.innerText === number) {
+            span.classList.add('note-highlight');
         }
     });
 }
@@ -374,6 +459,7 @@ function switchToNumber(i){
     numSelected = nexNumberDiv;
     numSelected.classList.add('number-selected');
     highlightMatchingTiles(numSelected.id);
+    highlightNotesOfNumber(numSelected.id);
 }
 
 //Give player a hint
@@ -516,7 +602,7 @@ function generatePuzzle(solvedBoard, difficulty = 'easy') {
     else if(difficulty === 'hard') removalCount = 45;
     else if(difficulty === 'expert') removalCount = 50;
     else if(difficulty === 'extreme') removalCount = 55;
-    else removalCount = 60;//
+    else removalCount = 60;
 
     while (removalCount > 0) {
         let row = Math.floor(Math.random() * 9);
@@ -603,4 +689,5 @@ function EndGame() {
         }
     }
     alert('You have successfully completed the sudoku!');
+    startNewGame("easy");
 }
