@@ -263,6 +263,7 @@ header, #DarkModeBtn{
 .note-highlight{
     color: /*rgba(255, 128, 0, 0.575)*/ #0011ff;
     font-weight: 700;
+    text-shadow: 0 0 20px rgba(45, 54, 181, 0.5);
 }
 
 /* Dark mode */

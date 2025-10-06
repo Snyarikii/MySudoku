@@ -215,7 +215,7 @@ function addNoteToTile(tile, number) {
     renderTileNotes(tile);
 }
 
-// This function renders the notes inside a tile
+// Render the notes inside a tile
 function renderTileNotes(tile) {
     let notes = tile.dataset.notes ? tile.dataset.notes.split(',') : [];
     tile.innerHTML = '';
@@ -346,7 +346,7 @@ function performReset() {
 }
 
 
-// This function undoes the last move made by the player
+// Undo the last move made by player
 function UndoMove() {
     if (moveStack.length === 0) return;
 
@@ -371,7 +371,7 @@ function UndoMove() {
     }
 }
 
-// This function highlights similar numbers to the one that is selected by the user
+// Highlight similar numbers to the one that is selected by the user
 function highlightMatchingTiles(number){
     let allTiles = document.querySelectorAll('.tile');
     allTiles.forEach(tile => {
@@ -394,7 +394,7 @@ function highlightNotesOfNumber(number) {
     });
 }
 
-// This function increments the number count when a player inputs a number into a tile
+// Increment the number count when a player inputs a number into a tile
 function NumberCount(){
     //let allTiles = document.querySelectorAll('.tile');
     let digits = document.getElementById('digits');       
@@ -517,7 +517,7 @@ function giveHint() {
     EndGame();
 }
 
-//This function checks if placing a number in a specific position is valid
+// Check if placing a number in a specific position is valid
 function isSafe(board, row, col, num) {
     for (let x = 0; x < 9; x++) {
         //Check row and column
@@ -584,7 +584,7 @@ function generateFullSolution() {
     return board;
 }
 
-// This function shuffles an array in place
+// Shuffle an array in place
 function shuffleArray(array) {
     for (let i = array.length -1; i > 0; i--){
         let j = Math.floor(Math.random() * (i + 1));
