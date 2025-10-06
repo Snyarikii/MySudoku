@@ -679,7 +679,7 @@ function startNewGame(difficulty) {
 function EndGame() {
     let allTiles = document.querySelectorAll('.tile');
     for(let tile of allTiles) {
-      if(tile.innerText === ''){
+      if(!/^[1-9]$/.test(tile.innerText) || (tile.dataset.notes)){
         return;
       }
     }
@@ -688,6 +688,10 @@ function EndGame() {
         let coords = tile.id.split('-');
         let r = parseInt(coords[0]);
         let c = parseInt(coords[1]);
+
+        // if(tile.innerText < '1' || tile.innerText > '9') {
+        //     return;
+        // }
 
         if(tile.innerText !== currentSolution[r][c]) {
             alert("Some numbers are incorrect. Try again");
