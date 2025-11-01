@@ -1,11 +1,15 @@
-//const { render } = require("express/lib/response");
-
 var numSelected = null;
 var tileSelected = null;
 var moveStack = [];
 var errors = 0;
 let noteMode = false;
 let initialBoard = [];
+
+//Timer variables
+let timerInterval = null;
+let totalSeconds = 0;
+let isTimerRunning = false;
+let isGamePaused = false;
 
 let count = {};
 for(let i = 1; i <= 9; i++){
@@ -50,30 +54,107 @@ function initializeCount(){
     });
 }
 
-
-window.onload = function () {
-    // setupDifficultyButtons();
-    // startNewGame("easy");
-
+document.addEventListener('DOMContentLoaded', () => {
     const urlParams = new URLSearchParams(window.location.search);
-    const difficulty = urlParams.get('difficulty') || 'easy';
-    startNewGame(difficulty);
+    const requestedDifficulty = urlParams.get('difficulty');
+    
+    const savedBoard = localStorage.getItem('sudokuBoard');
+    const savedDifficulty = localStorage.getItem('sudokuDifficulty');
+    
+    document.getElementById('pause-btn').addEventListener('click', pauseGame);
+    document.getElementById('resume-btn').addEventListener('click', resumeGame);
+    
+    document.getElementById('new-game-pause-btn').addEventListener('click', () => {
+        const dropdown = this.document.getElementById('new-game-pause-dropdown');
+        dropdown.classList.toggle('menu-open');
+    });
+    
+    document.addEventListener('click', (event) => {
+        const button = event.target.closest('.difficulty-option-btn-pause');
+        if (button) {
+            const selectedDifficulty = button.dataset.difficulty;
+            if (selectedDifficulty) {
+                stopTimer();
+    
+                window.location.href = `index.html?difficulty=${selectedDifficulty}`;
+            }
+        }
+    });
+    
+    if (requestedDifficulty && requestedDifficulty !== savedDifficulty?.toLocaleLowerCase()) {
+        startNewGame(requestedDifficulty);
+    } else if (savedBoard) {
+        loadSavedGame();
+    } else {
+        startNewGame("easy");
+    }
+    
     document.getElementById('undo').addEventListener('click', UndoMove);
     document.getElementById('resetBtn').addEventListener('click', resetBoard);
+});
+
+window.onload = function () {
 }
 
-// function setupDifficultyButtons() {
-//     document.getElementById("Easy-sudoku").addEventListener("click", () => startNewGame("easy"));
-//     document.getElementById("Hard-sudoku").addEventListener('click', () => startNewGame("hard"));
-//     document.getElementById("Expert-sudoku").addEventListener('click', () => startNewGame("expert"));
-//     document.getElementById("Extreme-sudoku").addEventListener('click', () => startNewGame("extreme"));
-// }
+function formatTime(seconds) {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+}
+
+function startTimer() {
+    if (isTimerRunning) return;
+    isTimerRunning = true;
+
+    timerInterval = setInterval(() => {
+        totalSeconds++;
+        updateTimerDisplay();
+
+        if (totalSeconds & 10 === 0) {
+            localStorage.setItem('sudokuTime', totalSeconds.toString());
+        }
+    }, 1000);
+}
+
+function stopTimer() {
+    clearInterval(timerInterval);
+    isTimerRunning = false;
+}
+
+function updateTimerDisplay() {
+    document.getElementById('timer-display').innerText = formatTime(totalSeconds);
+}
 
 function switchDifficulty(board, solution) {
     currentBoard = board;
     currentSolution = solution;
     resetGame();
     setupGame();
+}
+
+function pauseGame() {
+    if (isGamePaused) return;
+
+    if (isTimerRunning) stopTimer();
+    isGamePaused = true;
+
+    document.body.classList.add('paused');
+
+    const dialog = document.getElementById('pause-dialog');
+    document.getElementById('paused-difficulty').innerText = document.getElementById('difficulty-level').innerText;
+    document.getElementById('paused-time').innerText = formatTime(totalSeconds);
+    dialog.classList.remove('hidden');
+
+    document.getElementById('new-game-pause-dropdown').classList.remove('menu-open');
+}
+function resumeGame() {
+    if(!isGamePaused) return;
+    
+    document.getElementById('pause-dialog').classList.add('hidden');
+    document.body.classList.remove('paused');
+    isGamePaused = false;
+
+    startTimer();
 }
 
 function resetGame() {
@@ -154,6 +235,10 @@ function selectTile(){
     if(count[numSelected.id] <=  0) return;
     if (this.classList.contains('tile-start')) return; // Can't modify starter tiles
 
+    if (moveStack.length === 0 && !this.innerText) {
+        startTimer();
+    }
+
     // NOTES MODE: Add/remove note from this tile
     if (noteMode) {
         addNoteToTile(this, numSelected.id);
@@ -204,6 +289,7 @@ function selectTile(){
    
     highlightMatchingTiles(numSelected ? numSelected.id : null);
     EndGame();
+    saveGameData();
 }
 
 
@@ -228,6 +314,7 @@ function addNoteToTile(tile, number) {
     }
     tile.dataset.notes = existingNotes.join(',');
     renderTileNotes(tile);
+    saveGameData();
 }
 
 // Render the notes inside a tile
@@ -316,9 +403,14 @@ function resetBoard() {
         performReset();
         return;
     }
+    stopTimer();
+
     const confirmReset = confirm("You have unsaved progress. Are you sure you want to reset the board? All your progress will be lost.");
+
     if(confirmReset) {
         performReset();
+    } else {
+        if (moveStack.length > 0 ) startTimer();
     }
 
 }
@@ -357,6 +449,7 @@ function performReset() {
     if (numSelected) numSelected.classList.remove('number-selected');
     numSelected = null;
     highlightMatchingTiles(null);
+    saveGameData();
     
 }
 
@@ -384,6 +477,7 @@ function UndoMove() {
         }
         highlightMatchingTiles(numSelected ? numSelected.id : null);
     }
+    saveGameData();
 }
 
 // Highlight similar numbers to the one that is selected by the user
@@ -530,6 +624,7 @@ function giveHint() {
         randomTile.classList.remove("hint-color");
     }, 1500);
     EndGame();
+    saveGameData();
 }
 
 // Check if placing a number in a specific position is valid
@@ -666,6 +761,18 @@ function hasUniqueSolution(board) {
 
 // Start a new game with the specified difficulty
 function startNewGame(difficulty) {
+    localStorage.removeItem('sudokuBoard');
+    localStorage.removeItem('sudokuSolution');
+    localStorage.removeItem('sudokuErrors');
+    localStorage.removeItem('sudokuMoveStack');
+    localStorage.removeItem('sudokuDifficulty');
+    localStorage.removeItem('sudokuHints');
+    localStorage.removeItem('sudokuTime');
+
+    stopTimer();
+    totalSeconds = 0;
+    updateTimerDisplay();
+    
     resetGame();
 
     hintCount = 3;
@@ -688,6 +795,95 @@ function startNewGame(difficulty) {
     else if(difficulty === 'hard') difficultyLabel.innerText = "Hard";
     else if(difficulty === 'expert') difficultyLabel.innerText = "Expert";
     else if(difficulty === 'extreme') difficultyLabel.innerText = "Extreme";
+
+    setTimeout(() => saveGameData(), 200);
+}
+
+function saveGameData() {
+    let currentBoardState = [];
+    const tiles = document.querySelectorAll('.tile');
+    tiles.forEach(tile => {
+        const [r, c] = tile.id.split('-').map(Number);
+
+        currentBoardState.push({
+            id: tile.id,
+            value: tile.innerText,
+            notes: tile.dataset.notes || '',
+            isStarter: tile.classList.contains('tile-start')
+        });
+    });
+
+    localStorage.setItem('sudokuBoard', JSON.stringify(currentBoardState));
+    localStorage.setItem('sudokuSolution', JSON.stringify(currentSolution));
+    localStorage.setItem('sudokuErrors', errors.toString());
+    localStorage.setItem('sudokuHints', hintCount.toString());
+    localStorage.setItem('sudokuDifficulty', document.getElementById('difficulty-level').innerText);
+    localStorage.setItem('sudokuMoveStack', JSON.stringify(moveStack));
+    localStorage.setItem('sudokuTime', totalSeconds.toString());
+}
+function loadSavedGame() {
+    const boardState = JSON.parse(localStorage.getItem('sudokuBoard'));
+    const solution = JSON.parse(localStorage.getItem('sudokuSolution'));
+    const savedErrors = parseInt(localStorage.getItem('sudokuErrors'));
+    const hints = parseInt(localStorage.getItem('sudokuHints'));
+    const difficulty = localStorage.getItem('sudokuDifficulty');
+    const savedMoveStack = JSON.parse(localStorage.getItem('sudokuMoveStack'));
+    const savedTime = parseInt(localStorage.getItem('sudokuTime')) || 0;
+    
+
+    hintCount = hints;
+    currentSolution = solution;
+    moveStack = savedMoveStack;
+    errors = savedErrors;
+    totalSeconds = savedTime;
+    
+
+    document.getElementById('errors').innerText = savedErrors;
+    document.getElementById("hint-label").innerText = `Hints (${hintCount})`;
+    document.getElementById('difficulty-level').innerText = difficulty;
+
+    document.getElementById("board").innerHTML = "";
+    document.getElementById('digits').innerHTML = "";
+    createDigits();
+
+    const boardContainer = document.getElementById('board');
+    boardState.forEach(cell => {
+        let tile = document.createElement('div');
+        tile.id = cell.id;
+        tile.innerText = cell.value;
+
+        if(cell.notes) {
+            tile.dataset.notes = cell.notes;
+            renderTileNotes(tile);
+        }
+
+        if(cell.isStarter) {
+            tile.classList.add('tile-start');
+        } else if( cell.value) {
+            const [r, c] = cell.id.split('-').map(Number);
+            if(cell.value !== currentSolution[r][c]) {
+                tile.classList.add('wrong-color');
+            } else {
+                tile.classList.add('correct-color');
+            }
+        }
+
+        const [r, c] = cell.id.split('-').map(Number);
+        if(r == 2 || r == 5) tile.classList.add('horizontal-line');
+        if(c == 2 || c == 5) tile.classList.add('vertical-line');
+        tile.addEventListener('click', selectTile);
+        tile.classList.add('tile');
+        boardContainer.appendChild(tile);
+    });
+
+    for (let i = 1; i <= 9; i++) count[i] = 9;
+    initializeCount();
+    NumberCount();
+
+    updateTimerDisplay();
+    if (moveStack.length > 0) {
+        startTimer();
+    }
 }
 
 //End of the game
@@ -713,6 +909,16 @@ function EndGame() {
             return;
         }
     }
+    stopTimer();
     alert('You have successfully completed the sudoku!');
-    startNewGame("easy");
+
+    localStorage.removeItem('sudokuBoard');
+    localStorage.removeItem('sudokuSolution');
+    localStorage.removeItem('sudokuErrors');
+    localStorage.removeItem('sudokuHints');
+    localStorage.removeItem('sudokuDifficulty');
+    localStorage.removeItem('sudokuMoveStack');
+    localStorage.removeItem('sudokuTime');
+
+    window.location.href = "home.html";
 }

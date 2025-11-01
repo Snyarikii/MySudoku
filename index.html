@@ -9,12 +9,6 @@
 <body>
     <header>
         <h1>Sudoku</h1>
-        <!-- <div class="difficulty">
-            <button id="Easy-sudoku">Easy</button>
-            <button id="Hard-sudoku">Hard</button>
-            <button id="Expert-sudoku">Expert</button>
-            <button id="Extreme-sudoku">Extreme</button>
-        </div> -->
         <button id="DarkModeBtn">☀️ / 🌙 </button>
     </header>
 
@@ -24,6 +18,10 @@
             <p id="errors">0</p>
         </div>
         <p>Difficulty: <span id="difficulty-level"></span></p>
+        <div class="timer-controls">
+            <p>Time: <span id="timer-display">00:00</span></p>
+            <button id="pause-btn" class="control-btn">⏸️</button>
+        </div>
     </div>
 
 
@@ -38,6 +36,30 @@
         </div>
     </div>
     <div id="digits"></div>
+
+    <div id="pause-dialog" class="custom-dialog-overlay hidden">
+        <div class="dialog-content">
+            <h2>Paused</h2>
+            <div class="dialog-info">
+                <p>Difficulty: <span id="paused-difficulty"></span></p>
+                <p>Time: <span id="paused-time"></span></p>
+            </div>
+            <div class="dialog-actions">
+                <button id="resume-btn" class="cta-button primary-cta">Resume</button>
+
+                <div id="new-game-pause-container">
+                    <button id="new-game-pause-btn" class="cta-button secondary-cta">New Game</button>
+
+                    <div id="new-game-pause-dropdown" class="difficulty-menu hidden">
+                        <button class="difficulty-option-btn-pause" data-difficulty="easy">Easy</button>
+                        <button class="difficulty-option-btn-pause" data-difficulty="hard">Hard</button>
+                        <button class="difficulty-option-btn-pause" data-difficulty="expert">Expert</button>
+                        <button class="difficulty-option-btn-pause" data-difficulty="extreme">Extreme</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 <script src="index.js"></script>
 </html>

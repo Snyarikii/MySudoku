@@ -134,6 +134,7 @@ body {
 }
 
 .cta-button {
+    width: 223px;
     text-decoration: none;
     padding: 1rem 2rem;
     border-radius: 8px;
@@ -142,20 +143,6 @@ body {
     text-align: center;
     transition: background-color 0.3s, transform 0.1s;
     box-shadow: 0 4px 6px var(--shadow-color);
-}
-
-/* Specific button styles */
-.cta-button.easy {
-    background-color: #34d399; /* Green for Easy */
-    color: var(--text-color);
-}
-.cta-button.medium {
-    background-color: #fcd34d; /* Yellow for Medium */
-    color: var(--text-color);
-}
-.cta-button.hard {
-    background-color: #ef4444; /* Red for Hard */
-    color: var(--card-bg);
 }
 
 .cta-button:hover {
