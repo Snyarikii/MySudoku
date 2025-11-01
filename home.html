@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="home.css">
+    <title>Sudoku Master - Home</title>
+</head>
+<body>
+    <header class="main-header">
+        <h1>Sudoku Master</h1>
+        <button id="theme-toggle" aria-label="Toggle light and dark mode">
+            <span>☀️ / 🌙 </span>
+        </button>
+    </header>
+
+    <main class="hero-section">
+        <section class="intro-card">
+            <h2>Challenge Your Mind!</h2>
+            <p>Welcome to Sudoku Master. Sharpen your logic with classic puzzles at your chosen difficulty.</p>
+
+            <div class="main-actions">
+                <div id="new-game-dropdown-container" class="dropdown-closed">
+                    <button id="new-game-btn" class="cta-button primary-cta">
+                        New Game
+                    </button>
+
+                    <div id="difficulty-options-menu" class="difficulty-menu">
+                        <!-- <p>Select Difficulty:</p> -->
+                        <button class="difficulty-option-btn" data-difficulty="easy">Easy</button>
+                        <button class="difficulty-option-btn" data-difficulty="hard">Hard</button>
+                        <button class="difficulty-option-btn" data-difficulty="expert">Expert</button>
+                        <button class="difficulty-option-btn" data-difficulty="extreme">Extreme</button>
+                    </div>
+                </div>
+            </div>
+
+            <p class="note">Ready to continue your last game? <a href="#">Resume</a></p>
+        </section>
+
+        <aside class="visual-element">
+            <div class="sudoku-grid-preview">
+                <span class="cell">5</span><span class="cell">3</span><span class="cell">.</span>
+                <span class="cell">6</span><span class="cell">.</span><span class="cell">.</span>
+                <span class="cell">.</span><span class="cell">9</span><span class="cell">8</span>
+            </div>
+        </aside>
+    </main>
+
+    <footer class="main-footer">
+        <p>&copy; 2025 Sudoku Master. Clearn. Simple. Fun.</p>
+    </footer>
+    
+</body>
+
+<script src="home.js"></script>
+</html>

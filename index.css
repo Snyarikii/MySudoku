@@ -1,14 +1,63 @@
-/* Light mode */
+ /* Light mode */
+
+:root {
+    --bg-color: #f0f4f8;        /* Light background */
+    --bg-secondary: #ffffff;      /* Tile background */
+    --text-color: #1f2937;      /* Dark text */
+    --text-secondary: #0f172a;    /* H1/Borders */
+    --primary-color: #4f46e5;   /* Violet/Blue accent */
+    --secondary-color: #6366f1; /* Lighter accent */    
+
+    --tile-bg-start: whitesmoke; /* Tile background */
+    --border-color-heavy: black;
+    --border-color-light: lightgray;
+
+    --highlight-color: #d6ebff;
+    --correct-color: #66bb6a;
+    --error-color: coral;
+    --hint-color: #c8f7c5;
+    --selected-color-bg: rgba(128, 128, 128, 0.1);
+    --selected-color-border: rgba(255, 128, 0, 0.575);
+    --note-color: grey;
+    --note-highlight: #0011ff;
+}
+/* Dark mode */
+[data-theme="dark"] {
+    --bg-color: #111827;        /* Dark background (near black) */
+    --bg-secondary: #1E1E1E;      /* Tile background */
+    --text-color: #f9fafb;      /* Light text */
+    --text-secondary: #E0E0E0;    /* H1/Borders */
+    --primary-color: #a78bfa;   /* Light violet accent */
+    --secondary-color: #c4b5fd; /* Lighter accent */
+
+    --tile-bg-start: #2c2c2ca7; /* Tile background */
+    --border-color-heavy: white;
+    --border-color-light: #333333;
+
+    --highlight-color: #2b3d4f;
+    --correct-color: #81c784;
+    --error-color: #EF5350;
+    --hint-color: #37474f;
+    --selected-color-bg: #1E1E1E;
+    --selected-color-border: rgba(255, 128, 0, 0.575);
+    --note-color: #BDBDBD;
+    --note-highlight: #258de1;
+    
+}
 body{
     font-family: Arial, Helvetica, sans-serif;
     text-align: center;
+
+    background-color: var(--bg-color); 
+    color: var(--text-color);
+    transition: background-color 0.3s, color 0.3s;
 }
 header{
     display: flex;
     justify-content: space-between;
     height: 7vh;
-    margin-bottom: 15px;
-    /* background-color: lightskyblue; */
+    color: var(--text-secondary);
+    /* margin-bottom: 15px;     */
 }
 header, h1{
     margin-left: 20px;
@@ -17,6 +66,16 @@ header, h1{
 }
 header, #DarkModeBtn{
     margin-right: 30px;
+    background-color: transparent;
+    border: none;
+    font-size: 20px;
+    color: var(--text-color);
+}
+#DarkModeBtn:hover {
+    cursor: pointer;
+    background-color: var(--secondary-color);
+    color: #ffffff;
+    border-radius: 4px;
 }
 .difficulty{
     display: flex;
@@ -24,46 +83,7 @@ header, #DarkModeBtn{
     justify-content: center;
     border: none;
 }
-#Easy-sudoku {
-    background-color: lightgreen;
-    border: none;
-    border-radius: 4px;
-    padding: 5px;
-    cursor: pointer;
-}
-#Easy-sudoku:hover {
-    background-color: #52db52;
-}
-#Hard-sudoku {
-    background-color: lightcoral;
-    border: none;
-    border-radius: 4px;
-    padding: 5px;
-    cursor: pointer;
-}
-#Hard-sudoku:hover {
-    background-color: #ff4c4c;
-}
-#Expert-sudoku {
-    background-color: orange;
-    border: none;
-    border-radius: 4px;
-    padding: 5px;
-    cursor: pointer;
-}
-#Expert-sudoku:hover {
-    background-color: #dd8602;
-}
-#Extreme-sudoku {
-    background-color: red;
-    border: none;
-    border-radius: 4px;
-    padding: 5px;
-    cursor: pointer;
-}
-#Extreme-sudoku:hover {
-    background-color: #b30000;
-}
+
 
 .mistakes{
     display: flex;
@@ -94,7 +114,7 @@ header, #DarkModeBtn{
     justify-content: center;
     align-items: flex-start;
     gap: 4px;
-    /* margin-top: 20px; */
+    
 }
 .buttons {
     display: flex;
@@ -110,90 +130,53 @@ header, #DarkModeBtn{
     margin-left: 68px;
     display: flex;
     flex-wrap: wrap;
+    background-color: var(--bg-secondary);
 }
 
 .tile{
     width: 48px;
     height: 48px;
-    border: 1px solid lightgray;
+    border: 1px solid var(--border-color-light);
 
-    /* Text */
+   
     font-size: 20px;
     font-weight: bold;
     display: flex;
     justify-content: center;
     align-items: center;
+    color: var(--text-color);
 }
+
+.tile-start{
+    background-color: var(--tile-bg-start);
+}
+
 .tile .notes{
     font-size: 0.8rem;
-    color: grey;
+    /* color: grey; */
     text-align: center;
+    color: var(--note-color);
 }
-#undo{
+#undo, #notes, #hintBtn, #resetBtn {
     margin-bottom: 10px;
     background: transparent;
     border: none;
     font-weight: 900;
     font-size: 20px;
     justify-content: left;
+    color: var(--text-color);
 }
-#undo:hover{
-    color: rgba(255, 128, 0, 0.575);
-}
-#notes {
-    margin-bottom: 10px;
-    background: transparent;
-    border: none;
-    font-weight: 900;
-    font-size: 20px;
-    justify-content: left;   
-}
-#notes:hover {
-    color: rgba(255, 128, 0, 0.575);
-}
-#notes-label{
-    font-size: 11px;
-    font-weight: 500;
-    margin-top: 0;
-}
-#hintBtn{
-    margin-bottom: 10px;
-    background: transparent;
-    border: none;
-    font-weight: 900;
-    font-size: 20px;
-    justify-content: left;   
-}
-#hintBtn:hover {
-    color: rgba(255, 128, 0, 0.575);
-}
-#hint-label{
-    font-size: 12px;
-    font-weight: 500;
-    margin-top: 0;
-}
+
 .hint-color{
-    background-color: #c8f7c5;
+    background-color: var(--hint-color);
     transition: background-color 1s ease;
 }
-.undo-label{
-    font-size: 12px;
-    margin-top: 0;
-    font-weight: 500;
+
+#undo:hover, #notes:hover, #hintBtn:hover, #resetBtn:hover{
+    color: var(--selected-color-border);
 }
-#resetBtn{
-    margin-bottom: 10px;
-    background: transparent;
-    border: none;
-    font-weight: 900;
-    font-size: 20px;
-    justify-content: left;   
-}
-#resetBtn:hover {
-    color: rgba(255, 128, 0, 0.575);
-}
-#reset-label{
-    font-size: 12px;
+#notes-label, #hint-label, .undo-label, #reset-label {
+    font-size: 11px;
     font-weight: 500;
     margin-top: 0;
 }
@@ -201,23 +184,23 @@ header, #DarkModeBtn{
 #digits{
     width: 450px;
     height: 50px;
-    /* background-color: yellow; */
+    
     margin: 20px auto 0;
 
     justify-content: center;   
     display: flex;
     flex-wrap: wrap;
-    /* margin-top: 10px; */
+    
 }
 .number{
     width: 44px;
     height: 44px;
-    border: 1px solid black;
+    border: 1px solid var(--border-color-heavy);
     margin: 2px;
     border-radius: 4px;
     cursor: pointer;
 
-    /* Text */
+    
     font-size: 20px;
     font-weight: bold;
     display: flex;
@@ -227,27 +210,24 @@ header, #DarkModeBtn{
 .num-count{
     position: absolute;
     font-size: 0.7em;
-    color: rgb(15, 15, 15);
+    color: var(--text-color);
     margin-left: 25px;
     margin-top: 20px;
 }
 
 .number-selected {
-    background-color: rgba(128, 128, 128, 0.368);
-    border:1px solid rgba(255, 128, 0, 0.575);
-}
-.tile-start{
-    background-color: whitesmoke;
+    background-color: var(--selected-color-bg);
+    border:1px solid var(--selected-color-border);
 }
 
 .horizontal-line{
-    border-bottom: 2px solid black;
+    border-bottom: 2px solid var(--border-color-heavy);
 }
 .vertical-line{
-    border-right: 2px solid black;
+    border-right: 2px solid var(--border-color-heavy);
 }
 .highlight{
-    background-color:/* rgba(255, 128, 0, 0.575)*/ #d6ebff;
+    background-color: var(--highlight-color);
 }
 .disabled{
     opacity: 0.5;
@@ -255,19 +235,19 @@ header, #DarkModeBtn{
     cursor: not-allowed;
 }
 .correct-color{
-    color: #66bb6a;
+    color: var(--correct-color);
 }
 .wrong-color{
-    color: red;
+    color: var(--error-color);
 }
 .note-highlight{
-    color: /*rgba(255, 128, 0, 0.575)*/ #0011ff;
+    color:  var(--note-highlight);
     font-weight: 700;
     text-shadow: 0 0 20px rgba(45, 54, 181, 0.5);
 }
 
-/* Dark mode */
-.dark-mode {
+
+/* .dark-mode {
     background-color: #121212;
 }
 .dark-mode .mistakes{
@@ -334,18 +314,18 @@ header, #DarkModeBtn{
     border-right: 2px solid white;
 }
 .dark-mode .highlight {
-    background-color: /*rgba(255, 128, 0, 0.575)*/ #2b3d4f;
+    background-color:  #2b3d4f;
 }
 .dark-mode .error {
     color: #EF5350;
 }
 .dark-mode .correct-color{
-    color: /*rgb(0, 255, 0)*/ #81c784;
+    color:  #81c784;
 }
 .dark-mode .wrong-color{
     color: #EF5350;
 }
 .dark-mode .note-highlight{
-    color: /*rgba(255, 128, 0, 0.575)*/ #258de1;
+    color:  #258de1;
     font-weight: 700;
-}
+}  */

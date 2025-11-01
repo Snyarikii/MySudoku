@@ -13,14 +13,25 @@ for(let i = 1; i <= 9; i++){
 }
 
 const darkModeToggle = document.getElementById('DarkModeBtn');
-darkModeToggle.addEventListener('click', () => {
-    document.body.classList.toggle('dark-mode');
+const htmlElement = document.documentElement;
+const storageKey = 'sudoku-theme';
 
-    if(document.body.classList.contains('dark-mode')) {
-        darkModeToggle.innerHTML = "☀️";
-    } else {
-        darkModeToggle.innerHTML = "&#127769;";
+const getPreferredTheme = () => {
+    const storedTheme = localStorage.getItem(storageKey);
+    if (storedTheme) {
+        return storedTheme;
     }
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+};
+const applyTheme = (theme) => {
+    htmlElement.setAttribute('data-theme', theme);
+    localStorage.setItem(storageKey, theme);
+};
+applyTheme(getPreferredTheme());
+darkModeToggle.addEventListener('click', () => {
+    const currentTheme = htmlElement.getAttribute('data-theme');
+    const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+    applyTheme(newTheme);
 });
 
 document.getElementById('notes').addEventListener('click', () =>  {
@@ -41,18 +52,22 @@ function initializeCount(){
 
 
 window.onload = function () {
-    setupDifficultyButtons();
-    startNewGame("easy");
+    // setupDifficultyButtons();
+    // startNewGame("easy");
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const difficulty = urlParams.get('difficulty') || 'easy';
+    startNewGame(difficulty);
     document.getElementById('undo').addEventListener('click', UndoMove);
     document.getElementById('resetBtn').addEventListener('click', resetBoard);
 }
 
-function setupDifficultyButtons() {
-    document.getElementById("Easy-sudoku").addEventListener("click", () => startNewGame("easy"));
-    document.getElementById("Hard-sudoku").addEventListener('click', () => startNewGame("hard"));
-    document.getElementById("Expert-sudoku").addEventListener('click', () => startNewGame("expert"));
-    document.getElementById("Extreme-sudoku").addEventListener('click', () => startNewGame("extreme"));
-}
+// function setupDifficultyButtons() {
+//     document.getElementById("Easy-sudoku").addEventListener("click", () => startNewGame("easy"));
+//     document.getElementById("Hard-sudoku").addEventListener('click', () => startNewGame("hard"));
+//     document.getElementById("Expert-sudoku").addEventListener('click', () => startNewGame("expert"));
+//     document.getElementById("Extreme-sudoku").addEventListener('click', () => startNewGame("extreme"));
+// }
 
 function switchDifficulty(board, solution) {
     currentBoard = board;
