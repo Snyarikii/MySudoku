@@ -3,6 +3,51 @@ document.addEventListener('DOMContentLoaded', () => {
     const htmlElement = document.documentElement;
     const storageKey = 'sudoku-theme';
 
+
+    function checkForSavedGame() {
+        const continueBtn = document.getElementById('continue-btn');
+
+        try{
+            const savedBoardRaw = localStorage.getItem('sudokuBoard');
+            const savedDifficulty = localStorage.getItem('sudokuDifficulty');
+            const savedSolutionRaw = localStorage.getItem('sudokuSolution');
+
+            if (!savedBoardRaw || !savedSolutionRaw) return;
+    
+            const savedBoard = JSON.parse(savedBoardRaw);
+            const savedSolution = JSON.parse(savedSolutionRaw);
+    
+            const hasValidGame = 
+                Array.isArray(savedBoard) &&
+                savedBoard.length === 81 &&
+                savedBoard.some(cell => !cell.value || cell.value === '-' || cell.value === '') &&
+                Array.isArray(savedSolution) &&
+                savedSolution.length === 9 &&
+                savedSolution.every(row => Array.isArray(row) && row.length === 9);
+    
+            if (hasValidGame) {
+                continueBtn.style.display = "block";
+                continueBtn.textContent = savedDifficulty
+                    ? `Continue Your Last ${savedDifficulty} Game`
+                    : "Continue Your Last Game";
+    
+                continueBtn.addEventListener('click', () => {
+                    window.location.href = `index.html?continue=true`;
+                });
+            } else {
+                continueBtn.style.display = "none";
+            }
+        } catch (e) {            
+            console.error("No valid saved game found:", e);
+            continueBtn.style.display = "none";
+
+        }
+    }
+
+    checkForSavedGame();
+    window.addEventListener('pageshow', checkForSavedGame);
+
+
     // 1. Get user's saved preference or system preference
     const getPreferredTheme = () => {
         const storedTheme = localStorage.getItem(storageKey);

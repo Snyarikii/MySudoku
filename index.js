@@ -1,3 +1,17 @@
+if (window.performance && window.performance.navigation.type === window.performance.navigation.TYPE_BACK_FORWARD) {
+    window.location.reload(true);
+}
+
+window.addEventListener('pageshow', (event) => {
+    if (event.persisted) {
+        window.location.reload();
+    }
+});
+
+window.addEventListener('beforeunload', function() {
+    window.history.replaceState(null, "", "home.html");
+});
+
 var numSelected = null;
 var tileSelected = null;
 var moveStack = [];
@@ -92,6 +106,12 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('undo').addEventListener('click', UndoMove);
     document.getElementById('resetBtn').addEventListener('click', resetBoard);
 });
+
+window.addEventListener('pageshow', function (event) {
+    if (event.persisted) {
+        window.location.reload();
+    }
+})
 
 window.onload = function () {
 }
@@ -830,6 +850,16 @@ function loadSavedGame() {
     const savedMoveStack = JSON.parse(localStorage.getItem('sudokuMoveStack'));
     const savedTime = parseInt(localStorage.getItem('sudokuTime')) || 0;
     
+    const isComplete = boardState.every(cell =>
+        /^[1-9]$/.test(cell.value) &&
+        cell.value === solution[cell.id.split('-')[0]][cell.id.split('-')[1]]
+    )
+
+    if (isComplete) {
+        localStorage.clear();
+        window.location.href = "home.html";
+        return;
+    }
 
     hintCount = hints;
     currentSolution = solution;
@@ -877,7 +907,12 @@ function loadSavedGame() {
     });
 
     for (let i = 1; i <= 9; i++) count[i] = 9;
-    initializeCount();
+    document.querySelectorAll('.tile').forEach(tile => {
+        if (!tile.dataset.notes && /^[1-9]$/.test(tile.innerText.trim())) {
+            count[tile.innerText.trim()]--;
+        }
+    });
+    // initializeCount();
     NumberCount();
 
     updateTimerDisplay();
@@ -919,6 +954,8 @@ function EndGame() {
     localStorage.removeItem('sudokuDifficulty');
     localStorage.removeItem('sudokuMoveStack');
     localStorage.removeItem('sudokuTime');
+
+    window.history.replaceState(null, "", 'home.html');
 
     window.location.href = "home.html";
 }

@@ -323,14 +323,14 @@ header, #DarkModeBtn{
 .timer-controls {
     display: flex;
     align-items: center;
-    gap: 15px;
-    margin-top: 15px;
+    gap: 5px;
+    
 }
 
 #pause-btn {
-    background: var(--bg-secondary);
+    background-color: transparent;
     color: var(--text-color);
-    border: 1px solid var(--border-color-heavy);
+    border: none;
     padding: 8px 12px;
     border-radius: 5px;
     cursor: pointer;
@@ -338,7 +338,7 @@ header, #DarkModeBtn{
 }
 
 #pause-btn:hover {
-    background-color: var(--secondary-color);
+    color: var(--selected-color-border);
 }
 
 .paused #board, .paused #digits {
